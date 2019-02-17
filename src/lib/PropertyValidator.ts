@@ -14,6 +14,7 @@ export const PropertyValidator = (
 ) => {
   let scopedValue: any
   return (target: any, propertyKey: string | symbol) => {
+    const staticType = typeof Reflect.getMetadata("design:type", target, propertyKey)()
     Reflect.defineProperty(target, propertyKey, {
       configurable: true,
       enumerable: true,
@@ -25,7 +26,7 @@ export const PropertyValidator = (
         if (validatorHub.hasValidation(validationName)) {
           const validator = validatorHub.getValidation(validationName)
           if (validator) {
-            isValid = validator([newValue, ...additionalParams])
+            isValid = validator([newValue, staticType, ...additionalParams])
           }
         }
         if (!isValid) {
